@@ -4,19 +4,23 @@
 
 #define MAX_ITERS 100
 
-void putpixel(char hue, char mult) {
+int putpixel(char hue, char mult) {
 	putchar(-hue*mult);
 	putchar( hue*mult);
 	putchar( 255*mult);
+	return 1;
 }
 
 // compute function and output pixel
-void f(complex double c) {
-	complex double z = c;
-	int i; // complex function iterations
-	for (i = 0; i < MAX_ITERS && fabs(z) < 10; i++)
-		z = z*z + c;
-	putpixel(fmin(255, log2(i + 2 - log2(log2(fabs(z)))) * 40), i < MAX_ITERS);
+void f(complex c) {
+	complex z = c;
+	int i = 0; // complex function iterations
+	while (fabs(z = z*z + c) < 4)
+		if (++i > MAX_ITERS) {
+			putpixel(0, 0);
+			return;
+		}
+	putpixel(fmin(255, log2(i + 2 - log2(log2(fabs(z)))) * 40), 1);
 }
 
 int main() {
@@ -24,9 +28,7 @@ int main() {
 	printf("P6\n%d %d\n255\n", w, h); // make PPM header
 
 	// compute function at each pixel
-	for (float y = 0; y < h; y++)
-		for (float x = 0; x < w; x++)
-			f((3*x/w - 2) + (2*y/h - 1) * I);
-
-	return 0;
+	for (float y = h; y--;)
+		for (float x = w; x--;)
+			f((1 - 3*x/w) + (1 - 2*y/h) * I);
 }
